@@ -9,11 +9,9 @@ int main()
     // 塞入padding member資料
     char num[SIZE + 1] = "";
     for(int i = 1; i <= SIZE; i++){
-        char fakename_local[] = "Member";
+        char fakename[20] = "Member";
         sprintf(num, "%d", i);
-        strcat(fakename_local, num);
-        char *fakename = malloc(sizeof(fakename_local)); // 避免iteration覆蓋string，要放在heap獨立位址
-        strcpy(fakename, fakename_local);
+        strcat(fakename, num);
         put(fakename, i, "0000000000");
     }
     calc_collision();
@@ -24,20 +22,20 @@ int main()
     struct timeval t0, t1;
     gettimeofday(&t0, NULL);
     for(int i = 1; i <= SIZE; i++){
-        char fakename_local[] = "Member";
+        char fakename[] = "Member";
         sprintf(num, "%d", i);
-        strcat(fakename_local, num);
-        find(fakename_local);
+        strcat(fakename, num);
+        find(fakename);
     }
     gettimeofday(&t1, NULL);
     printf("Hash Table搜尋%d次： %.2g seconds\n", SIZE, t1.tv_sec - t0.tv_sec + 1E-6 * (t1.tv_usec - t0.tv_usec));
     
     gettimeofday(&t0, NULL);
     for(int i = 1; i <= SIZE; i++){
-        char fakename_local[] = "Member";
+        char fakename[] = "Member";
         sprintf(num, "%d", i);
-        strcat(fakename_local, num);
-        normal_find(fakename_local);
+        strcat(fakename, num);
+        normal_find(fakename);
     }
     gettimeofday(&t1, NULL);
     printf("普通陣列搜尋%d次： %.2g seconds\n", SIZE, t1.tv_sec - t0.tv_sec + 1E-6 * (t1.tv_usec - t0.tv_usec));
@@ -46,7 +44,7 @@ int main()
         printf("輸入Member名稱$ ");
         char m[50] = "";
         scanf("%s", &m);
-        member_s *M = find(m);
+        member_t *M = find(m);
         if(M == NULL)
             printf("沒有找到該Member！\n\n");
         else

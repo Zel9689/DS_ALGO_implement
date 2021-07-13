@@ -11,23 +11,24 @@ static uint64_t hash_key(const char* key) {
     }
     return hash;
 }
-member_s* bucket[SIZE] = {0};
-member_s *normal[SIZE]; //對照組的普通儲存方式
+member_t* bucket[SIZE] = {0};
+member_t *normal[SIZE]; //對照組的普通儲存方式
 // 根據hash function決定陣列index
-int get_index(char *str_p)
+int get_index(const char *str_p)
 {
     uint64_t hash = hash_key(str_p);
-    //int index = hash & (SIZE - 1);
     int index = hash % SIZE;
     return index;
 }
 // 根據hash的index，在bucket放入member物件
-void put(char *name, int age, char *phone)
+void put(const char *name, int age, const char *phone)
 {
-    char *key = name; //用名字來取hash值、並轉換成陣列index
-    int index = get_index(key);
-    member_s *data = malloc(sizeof(member_s));
-    data->name = name; data->age = age; data->phone = phone;
+    int index = get_index(name); //用名字來取hash值、並轉換成陣列index
+    member_t *data = malloc(sizeof(member_t));
+    char *n = malloc(sizeof(name));
+    char *p = malloc(sizeof(phone));
+    strcpy(n, name); strcpy(p, phone);
+    data->name = n; data->age = age; data->phone = p;
     if(bucket[index] == NULL)
         bucket[index] = data;
     else
@@ -38,10 +39,10 @@ void put(char *name, int age, char *phone)
     i++;
 }
 // 輸入member名稱，回傳member物件
-member_s* find(char *str)
+member_t* find(const char *str)
 {
     int index = get_index(str);
-    member_s *p = bucket[index];
+    member_t *p = bucket[index];
     while(p != NULL){
         if(strcmp(p->name, str) == 0)   return p; 
         p = p->next;
@@ -60,9 +61,16 @@ void calc_collision()
     printf("collision: %d / %d\n", count, SIZE);
 }
 // 對照組的普通查詢
-member_s* normal_find(char *str)
+member_t* normal_find(const char *str)
 {
     for(int i = 0; i < SIZE; i++)
         if(strcmp(normal[i]->name, str) == 0)   return normal[i];
     return NULL;
+}
+// 釋放member物件記憶體
+void free_member(member_t *M)
+{
+    free(M->name);
+    free(M->phone);
+    free(M);
 }
