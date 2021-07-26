@@ -3,103 +3,141 @@
 #include <string.h>
 #include "binary_search_tree.h"
 
-// 我不知道root到底需不需要先初始化？
-// 應該不用，除了insert之外的函式都會用search，search就會回傳NULL，初始化的工作在insert做就好
-// 要，有root後這些函式才有意義，所以root和函式應該包在一個struct初始化
-static member_t *root = NULL;
-
-member_t* search(int num)
+member_t* init(int key, int age, char *name)
 {
-    member_t *m = root;
-    while(1){
-        if(num < m->num)    m = m->left;
-        if(num > m->num)    m = m->right;
-        if(m == NULL || num == m->num)  break;
-    }
+    member_t* m = malloc(sizeof(member_t));
+    m->left = NULL;
+    m->right = NULL;
+    m->parent = NULL;
+    m->key = key;
+    m->age = age;
+    int name_len = strlen(name) + 1;
+    m->name = malloc(name_len);
+    strncpy(m->name, name, name_len);
     return m;
 }
-// 我卡在我覺得search跟insert的迴圈很像，想融合在一起，但想不到辦法
-// 還有該怎麼決定編號，一開始想自動編號，讓樹的高度越矮越好
-member_t* insert(int num, int age, const char *name)
-{
-    int len = strlen(name) + 1;
-    member_t *m_new = malloc(sizeof(member_t));
-    m_new->num = num;
-    m_new->age = age;
-    m_new->name = malloc(len);
-    strncpy(m_new->name, name, len);
-    if(root == NULL){
-        root = m_new;
-        return m_new;
-    }
 
-    member_t *m = root;
+struct result_s search(member_t *m, int key)
+{
+    int pos;
     while(1){
-        if(num < m->num){
+        if(key == m->key){
+            pos = 0;
+            break;
+        }
+
+        if(key < m->key){
             if(m->left == NULL){
-                m->left = m_new;
-                return m_new;
+                pos = 1;
+                break;
             }else{
                 m = m->left;
             }
         }
-        else if(num > m->num){
+        
+        if(key > m->key){
             if(m->right == NULL){
-                m->right = m_new;
-                return m_new;
+                pos = 2;
+                break;
             }else{
-                m = m->right;
+               m = m->right;
             }
         }
-        else    return NULL;
     }
+    struct result_s result = {node:m, pos:pos};
+    return result;
 }
 
-int del(int num)
+int insert(member_t *r, int key, int age, char *name)
 {
-    member_t *m = search(num);
-    if(m == NULL) return -1;
+    struct result_s result = search(r, key);
+    if(result.pos == 0) return -1;
+
+    member_t *m = init(key, age, name);
+    if(result.pos == 1){
+        m->parent = result.node;
+        result.node->left = m;
+    }
+    if(result.pos == 2){
+        m->parent = result.node;
+        result.node->right = m;
+    }
+    return 0;
+}
+// new_kid takes old_kid's parent away
+void kids_changer(member_t *new_kid, member_t *old_kid)
+{
+    int pos;
+    new_kid->parent = old_kid->parent;
+    if(old_kid->key < old_kid->parent->key)
+        old_kid->parent->left = new_kid;
+    else
+        old_kid->parent->right = new_kid;
+}
+int del(member_t *m, int key)
+{
+    if(key == m->key)   return -1;
+    struct result_s result = search(m, key);
+    if(result.pos != 0) return -1;
     
-    member_t *m_max = m->left;
-    member_t *m_prev;
-    while(m_max->right != NULL){
-        m_prev = m_max;
-        m_max = m_max->right;
+    m = result.node;
+    if(m->left != NULL){
+        member_t *max_m = m->left;
+        while(max_m->right != NULL)    max_m = max_m->right;
+        
+        if(max_m != m->left){
+            max_m->parent->right = NULL;
+            max_m->left = m->left;
+            m->left->parent = max_m;
+        }
+        if(m->right != NULL){
+            max_m->right = m->right;
+            m->right->parent = max_m; // what if he has no right node
+        }
+        kids_changer(max_m, m);
+        
+        
     }
-    m_prev->right = NULL;
-    m_max->left = m->left;
-    m_max->right = m->right;
-    free(m);
-}
-
-void inorder(member_t *m)
-{
-    if(m == NULL) return;
-    inorder(m->left);
-    printf("編號: %d  姓名: %s  年齡: %d\n", m->num, m->name, m->age);
-    inorder(m->right);
-}
-void sort()
-{
-    inorder(root);
-}
-
-void postorder(member_t *m)
-{
-    if(m == NULL) return;
-    postorder(m->left);
-    postorder(m->right);
+    else if(m->right != NULL){
+        kids_changer(m->right, m);
+    }
+    else{
+        if(m->key < m->parent->key) m->parent->left = NULL;
+        else                        m->parent->right = NULL;
+    }
     free(m->name);
     free(m);
 }
-void destroy(){
-    postorder(root);
+
+void sort(member_t *m)
+{
+    if(m == NULL)
+        return;
+    sort(m->left);
+    printf("編號: %d  姓名: %s  年齡: %d\n", m->key, m->name, m->age);
+    sort(m->right);
 }
 
+void destroy(member_t *m)
+{
+    if(m == NULL)
+        return;
+    destroy(m->left);
+    destroy(m->right);
+    free(m->name);
+    free(m);
+}
 
-// 改成要傳instance進去
-// insert不回傳物件回去給main，main只會拿到root instance
-// insert後要印東西，自己在function中call print
-// 寫parent，程式會比較簡潔
-// 寫init創root
-// insert中判斷是否有parent 沒有的就是root
+int modify(member_t *m, int key, int age, char *name)
+{
+    struct result_s result = search(m, key);
+    if(result.pos != 0) return -1;
+    if(key == m->key) return -1;
+    m = result.node;
+    member_t *new_m = init(key, age, name);
+    kids_changer(new_m, m);
+    new_m->left = m->left;
+    new_m->right = m->right;
+    free(m->name);
+    free(m);
+}

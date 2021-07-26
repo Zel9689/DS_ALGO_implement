@@ -1,30 +1,38 @@
-#ifndef _binary_search_tree_h
-
-#define _binary_search_tree_h
+#ifndef _BINARY_SEARCH_TREE_H
+#define _BINARY_SEARCH_TREE_H
 
 typedef struct member_s member_t;
 struct member_s{
-    member_t* left;
-    member_t* right;
-    int num;
+    member_t *left;
+    member_t *right;
+    member_t *parent;
+    int key;
     int age;
     char *name;
 };
-// input: num of member; return member
-member_t* search(int);
-// input: num of member, age, name; return member
-member_t* insert(int, int, const char*);
-// input: num of member; return -1 代表失敗
-int del(int);
-// input: num of member, age
-void modify_age(int, int);
-// input: num of member, name
-void modify_name(int, const char*);
-// print inorder traversal
-void sort(void);
-void destroy(void);
+struct result_s{
+    member_t *node;
+    int pos;
+};
 
-
-
+// input: key, age, name
+// output: intance of bst
+member_t* init(int, int, char*);
+// input: instance, key of node
+// output: result struct{member, position}
+struct result_s search(member_t*, int);
+// input: instance, key, age, name
+// output: success:0 fail:-1
+int insert(member_t*, int, int, char*);
+// input: instance, key
+// output: success:0 fail:-1
+int del(member_t*, int);
+// input: instance
+void sort(member_t*);
+// input: instance
+void destroy(member_t*);
+// input: instance, target key, new age, new name
+// output: success:0 fail:-1
+int modify(member_t*, int, int, char*);
 
 #endif
