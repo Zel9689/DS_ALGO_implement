@@ -21,6 +21,12 @@ int main()
         A[i] = ((rand()%100)+1) * sign;
     }
 
+    // Print
+    for(int i=0; i<SIZE; i++){
+        printf("%d ", A[i]);
+    }
+    printf("\n");
+    
     // Bubble Sort
     for(int j = 1; j <= SIZE - 1; j++){
         for(int i = 0; i < SIZE - j; i++){
