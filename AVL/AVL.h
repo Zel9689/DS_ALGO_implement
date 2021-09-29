@@ -25,10 +25,11 @@ void print(Tree_t*);
 
 void _destroy(Node_t*);
 void _print(Node_t*);
-void _leftRotation(Tree_t*, Node_t*);
-void _rightRotation(Tree_t*, Node_t*);
-void _updateHeight(Tree_t*, Node_t*);
-void _updateBF(Tree_t*, Node_t*);
+int _getHeight(Node_t*);
+void _updateNodes(Node_t*);
 
+void _leftRotation(Node_t*);
+void _rightRotation(Node_t*);
 
+void _AVL(Node_t*);
 #endif

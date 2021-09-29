@@ -1,6 +1,11 @@
 #include "AVL.h"
 #include <stdio.h>
 #include <stdlib.h>
+#define max(a, b) ({ \
+    typeof (a) _a = (a); \
+    typeof (b) _b = (b); \
+    _a > _b ? _a : _b; \
+})
 
 Tree_t* create()
 {
@@ -59,8 +64,8 @@ int insert(Tree_t* t, int val)
         }
     }
 
-    _updateHeight(t, node);
-    _updateBF(t, node);
+    _updateNodes(node);
+    _AVL(ptr);
     return 0;
 }
 
@@ -92,15 +97,19 @@ int del(Tree_t* t, int val)
         node->parent->left = replace;
     else
         node->parent->right = replace;
-    free(node);
+    
 
-    Node_t *forUpdate = replace;
-    if(forUpdate->left != NULL){
-        forUpdate = forUpdate->left;
-        while(forUpdate->right != NULL) forUpdate = forUpdate->right;
+    Node_t *ptr = replace;
+    if(ptr == NULL){
+        ptr = node->parent;
+    }else if(ptr->left != NULL){
+        ptr = ptr->left;
+        while(ptr->right != NULL) ptr = ptr->right;
     }
-    _updateHeight(t, forUpdate);
-    _updateBF(t, forUpdate);
+
+    _updateNodes(ptr);
+    _AVL(ptr);
+    free(node);
     return 0;
 }
 
@@ -130,5 +139,91 @@ void _print(Node_t* ptr)
     _print(ptr->right);
 }
 
+int _getHeight(Node_t *node)
+{
+    if(node == NULL)
+        return -1;
+    if(node->left == NULL && node->right != NULL)
+        return node->right->height + 1;
+    if(node->left != NULL && node->right == NULL)
+        return node->left->height + 1;
+    return max(node->left->height, node->right->height) + 1;
+}
 
+void _updateNodes(Node_t *ptr)
+{
+    if(ptr == NULL) return;
+    do{
+        ptr->height = _getHeight(ptr);
+        ptr->bf     = _getHeight(ptr->left) - _getHeight(ptr->right);
+        ptr = ptr->parent;
+    }while(ptr != NULL);
+}
 
+void _leftRotation(Node_t *node)
+{
+    Node_t *r_sub = node->right;
+    
+    if(node->parent != NULL){
+        if(node->parent->left == node)  node->parent->left = r_sub;
+        if(node->parent->right == node)  node->parent->right = r_sub;
+    }
+    r_sub->parent = node->parent;
+
+    node->right = r_sub->left;
+    r_sub->left->parent = node;
+
+    r_sub->left = node;
+    node->parent = r_sub;
+
+    _updateNodes(node);
+}
+
+void _rightRotation(Node_t *node)
+{
+    Node_t *l_sub = node->left;
+    
+    if(node->parent != NULL){
+        if(node->parent->left == node)  node->parent->left = l_sub;
+        if(node->parent->right == node)  node->parent->right = l_sub;
+    }
+    l_sub->parent = node->parent;
+
+    node->left = l_sub->right;
+    l_sub->right->parent = node;
+
+    l_sub->right = node;
+    node->parent = l_sub;
+
+    _updateNodes(node);
+}
+
+void _AVL(Node_t *node)
+{
+    if(node == NULL) return;
+
+    if(node->bf < -1){
+        // RR
+        if(node->right->right != NULL){
+            _leftRotation(node);
+        }
+        // RL
+        else{
+            _rightRotation(node->right);
+            _leftRotation(node);
+        }
+    }
+    else if(node->bf > 1){
+        // LL
+        if(node->left->left != NULL){
+            _rightRotation(node);
+        }
+        // LR
+        else{
+            _leftRotation(node->left);
+            _rightRotation(node);
+        }
+    }
+    node = node->parent;
+    _AVL(node);
+}
