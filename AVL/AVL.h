@@ -23,13 +23,5 @@ int del(Tree_t*, int);
 void destroy(Tree_t*);
 void print(Tree_t*);
 
-void _destroy(Node_t*);
-void _print(Node_t*);
-int _getHeight(Node_t*);
-void _updateNodes(Node_t*);
 
-void _leftRotation(Node_t*);
-void _rightRotation(Node_t*);
-
-void _AVL(Node_t*);
 #endif

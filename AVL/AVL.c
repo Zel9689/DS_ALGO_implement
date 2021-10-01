@@ -7,6 +7,16 @@
     _a > _b ? _a : _b; \
 })
 
+extern Tree_t *t;
+static void _destroy(Node_t*);
+static void _print(Node_t*);
+static int _getHeight(Node_t*);
+static void _updateNodes(Node_t*);
+
+static void _leftRotation(Node_t*);
+static void _rightRotation(Node_t*);
+static void _AVL(Node_t*);
+
 Tree_t* create()
 {
     Tree_t* t = malloc(sizeof(Tree_t));
@@ -51,6 +61,7 @@ int insert(Tree_t* t, int val)
         if(val < ptr->val){
             if(ptr->left == NULL){
                 ptr->left = node;
+                node->parent = ptr;
                 break;
             }
             ptr = ptr->left;
@@ -58,6 +69,7 @@ int insert(Tree_t* t, int val)
         if(val > ptr->val){
             if(ptr->right == NULL){
                 ptr->right = node;
+                node->parent = ptr;
                 break;
             }
             ptr = ptr->right;
@@ -65,7 +77,7 @@ int insert(Tree_t* t, int val)
     }
 
     _updateNodes(node);
-    _AVL(ptr);
+    _AVL(node);
     return 0;
 }
 
@@ -118,7 +130,7 @@ void destroy(Tree_t *t)
     _destroy(t->root);
 }
 
-void _destroy(Node_t *ptr)
+static void _destroy(Node_t *ptr)
 {
     if(ptr == NULL) return;
     _destroy(ptr->left);
@@ -135,7 +147,7 @@ void _print(Node_t* ptr)
 {
     if(ptr == NULL) return;
     _print(ptr->left);
-    printf("val: %d, height: %d, balance_factor: %d", ptr->val, ptr->height, ptr->bf);
+    printf("val: %d, height: %d, balance_factor: %d\n", ptr->val, ptr->height, ptr->bf);
     _print(ptr->right);
 }
 
@@ -147,6 +159,8 @@ int _getHeight(Node_t *node)
         return node->right->height + 1;
     if(node->left != NULL && node->right == NULL)
         return node->left->height + 1;
+    if(node->left == NULL && node->right == NULL)
+        return 0;
     return max(node->left->height, node->right->height) + 1;
 }
 
@@ -167,11 +181,13 @@ void _leftRotation(Node_t *node)
     if(node->parent != NULL){
         if(node->parent->left == node)  node->parent->left = r_sub;
         if(node->parent->right == node)  node->parent->right = r_sub;
+    }else{
+        t->root = node->right;
     }
     r_sub->parent = node->parent;
 
     node->right = r_sub->left;
-    r_sub->left->parent = node;
+    if(r_sub->left != NULL)    r_sub->left->parent = node;
 
     r_sub->left = node;
     node->parent = r_sub;
@@ -186,11 +202,13 @@ void _rightRotation(Node_t *node)
     if(node->parent != NULL){
         if(node->parent->left == node)  node->parent->left = l_sub;
         if(node->parent->right == node)  node->parent->right = l_sub;
+    }else{
+        t->root = node->left;
     }
     l_sub->parent = node->parent;
 
     node->left = l_sub->right;
-    l_sub->right->parent = node;
+    if(l_sub->right != NULL)    l_sub->right->parent = node;
 
     l_sub->right = node;
     node->parent = l_sub;
@@ -206,22 +224,26 @@ void _AVL(Node_t *node)
         // RR
         if(node->right->right != NULL){
             _leftRotation(node);
+            node = node->parent;
         }
         // RL
         else{
             _rightRotation(node->right);
             _leftRotation(node);
+            node = node->parent;
         }
     }
     else if(node->bf > 1){
         // LL
         if(node->left->left != NULL){
             _rightRotation(node);
+            node = node->parent;
         }
         // LR
         else{
             _leftRotation(node->left);
             _rightRotation(node);
+            node = node->parent;
         }
     }
     node = node->parent;
