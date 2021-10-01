@@ -5,13 +5,13 @@
 static int height_of_tree = 0;
 static int depth_of_node = -1;
 
-void binary_tree_2dp(Node_t *node)
+void binary_tree_2dp(Node_T *node)
 {
     height_of_tree = node->height;
     _binary_tree_2dp_inorder(node);
 }
 
-static void _binary_tree_2dp_inorder(Node_t *node)
+static void _binary_tree_2dp_inorder(Node_T *node)
 {
     depth_of_node++;
     if(node == NULL){

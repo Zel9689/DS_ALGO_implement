@@ -1,8 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "AVL.h"
-#include "../binary_tree_2d_printer/binary_tree_2dp.h"
-Tree_t *t;
+#include "../binary_tree/binary_tree.h"
+#include "../binary_tree/binary_tree_2dp.h"
 
 int main()
 {
@@ -21,16 +20,25 @@ int main()
     //    -7  0
     //    /  / \
     //  -9  -1  3
-    t = create();
-    insert(t, 0);
-    insert(t, -5);
-    insert(t, 3);
-    insert(t, -7);
-    insert(t, -1);
-    insert(t, -9);
+    Node_T* root = init(0);
+    root = insert(root, -5);
+    root = insert(root, 3);
+    root = insert(root, -7);
+    root = insert(root, -1);
+    root = insert(root, -9);
+    binary_tree_2dp(root);
+    sort(root);
 
-    binary_tree_2dp(t->root);
-    print(t);
+
+    // expected output
+    //      -7
+    //      /\
+    //    -9  0
+    //       / \
+    //      -1  3
+    root = del(root, -5);
+    binary_tree_2dp(root);
+    sort(root);
 
     return 0;
 }
