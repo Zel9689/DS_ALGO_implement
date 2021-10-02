@@ -11,19 +11,19 @@ struct Node{
     int bf;         /* Balance Factor = Left node Height - Right node Height*/
 };
 
-Node_T* init(int);
-Node_T* search(Node_T *root, int);
-Node_T* get_parent(Node_T *root, int);
-Node_T* insert(Node_T *root, int);
-int link_data(Node_T *root, int, void *data);
-Node_T* del(Node_T *root, int);
-void destroy(Node_T *root);
-void sort(Node_T *root);
-int getHeight(Node_T*);
+typedef struct Tree Tree_T;
+struct Tree{
+    Node_T *root;
+};
 
-static void _updateNodes(Node_T *root, Node_T *node);
-static Node_T* _leftRotation(Node_T *root, Node_T *node);
-static Node_T* _rightRotation(Node_T *root, Node_T *node);
-static Node_T* _AVL(Node_T *root, Node_T *abs_root, Node_T *node);
+Tree_T* init(int);
+Node_T* search(Tree_T *t, int);
+Node_T* get_parent(Tree_T *t, int);
+void insert(Tree_T *t, int);
+void del(Tree_T *t, int);
+void destroy(Tree_T *t);
+void sort(Tree_T *t);
+int getHeight(Node_T*);
+int link_data(Node_T *root, int, void *data);
 
 #endif

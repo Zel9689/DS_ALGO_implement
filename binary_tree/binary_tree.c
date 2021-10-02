@@ -7,14 +7,71 @@
     _a > _b ? _a : _b; \
 })
 #define MACRO_AVL(root, node) (_AVL(root, root, node))
-Node_T* init(int val)
+static Node_T* _search(Node_T *root, int);
+static Node_T* _get_parent(Node_T *root, int);
+static Node_T* _insert(Node_T *root, int);
+static Node_T* _del(Node_T *root, int);
+static void _destroy(Node_T *root);
+static void _sort(Node_T *root);
+static void _updateNodes(Node_T *root, Node_T *node);
+static Node_T* _leftRotation(Node_T *root, Node_T *node);
+static Node_T* _rightRotation(Node_T *root, Node_T *node);
+static Node_T* _AVL(Node_T *root, Node_T *abs_root, Node_T *node);
+
+/*--------------API for Users--------------*/
+Tree_T* init(int val)
 {
+    Tree_T *t = malloc(sizeof(Tree_T));
     Node_T *root = malloc(sizeof(Node_T));
+    t->root = root;
+    root->left = 0;
+    root->right = 0;
     root->val = val;
-    return root;
+    root->data = 0;
+    root->height = 0;
+    root->bf = 0;
+    return t;
+}
+Node_T* search(Tree_T *t, int val)
+{
+    return _search(t->root, val);
+}
+Node_T* get_parent(Tree_T *t, int val)
+{
+    return _get_parent(t->root, val);
+}
+void insert(Tree_T *t, int val)
+{
+    t->root = _insert(t->root, val);
+}
+void del(Tree_T *t, int val)
+{
+    t->root = _del(t->root, val);
+}
+void destroy(Tree_T *t)
+{
+    _destroy(t->root);
+    t->root = NULL;
+}
+void sort(Tree_T *t)
+{
+    _sort(t->root);
+}
+int getHeight(Node_T *node)
+{
+    if(node == NULL)
+        return -1;
+    if(node->left == NULL && node->right != NULL)
+        return node->right->height + 1;
+    if(node->left != NULL && node->right == NULL)
+        return node->left->height + 1;
+    if(node->left == NULL && node->right == NULL)
+        return 0;
+    return max(node->left->height, node->right->height) + 1;
 }
 
-Node_T* search(Node_T *root, int val)
+/*--------------Private Method--------------*/
+static Node_T* _search(Node_T *root, int val)
 {
     Node_T *ptr = root;
     while(ptr != NULL){
@@ -33,7 +90,7 @@ Node_T* search(Node_T *root, int val)
     return NULL;
 }
 
-Node_T* get_parent(Node_T *root, int val)
+static Node_T* _get_parent(Node_T *root, int val)
 {
     Node_T *ptr = root;
     Node_T *parent = NULL;
@@ -55,11 +112,11 @@ Node_T* get_parent(Node_T *root, int val)
     return parent;
 }
 
-Node_T* insert(Node_T *root, int val)
+static Node_T* _insert(Node_T *root, int val)
 {
-    if(search(root, val) != NULL)   return NULL;
+    if(_search(root, val) != NULL)   return root;
     Node_T *node = malloc(sizeof(Node_T));
-    Node_T *parent = get_parent(root, val);
+    Node_T *parent = _get_parent(root, val);
     node->val = val;
     if(val < parent->val)   parent->left = node;
     else                    parent->right = node;
@@ -71,11 +128,11 @@ Node_T* insert(Node_T *root, int val)
     return root;
 }
 
-Node_T* del(Node_T *root, int val)
+static Node_T* _del(Node_T *root, int val)
 {
-    Node_T *node = search(root, val);
-    Node_T *parent = get_parent(root, val);
-    if(node == NULL)    return NULL;
+    Node_T *node = _search(root, val);
+    Node_T *parent = _get_parent(root, val);
+    if(node == NULL)    return root;
     Node_T *replace; /* replace會取代被刪除的node */
     /* 有左節點就將replace令為左樹最大node */
     if(node->left != NULL){
@@ -115,33 +172,21 @@ Node_T* del(Node_T *root, int val)
     return root;
 }
 
-void destroy(Node_T *ptr)
+static void _destroy(Node_T *ptr)
 {
     if(ptr == NULL) return;
-    destroy(ptr->left);
-    destroy(ptr->right);
+    _destroy(ptr->left);
+    _destroy(ptr->right);
     free(ptr);
+    ptr = NULL;
 }
 
-void sort(Node_T *ptr)
+static void _sort(Node_T *ptr)
 {
     if(ptr == NULL) return;
-    sort(ptr->left);
+    _sort(ptr->left);
     printf("val: %d, height: %d, balance_factor: %d\n", ptr->val, ptr->height, ptr->bf);
-    sort(ptr->right);
-}
-
-int getHeight(Node_T *node)
-{
-    if(node == NULL)
-        return -1;
-    if(node->left == NULL && node->right != NULL)
-        return node->right->height + 1;
-    if(node->left != NULL && node->right == NULL)
-        return node->left->height + 1;
-    if(node->left == NULL && node->right == NULL)
-        return 0;
-    return max(node->left->height, node->right->height) + 1;
+    _sort(ptr->right);
 }
 
 static void _updateNodes(Node_T *root, Node_T *node)
@@ -156,7 +201,7 @@ static void _updateNodes(Node_T *root, Node_T *node)
 static Node_T* _leftRotation(Node_T *root, Node_T *node)
 {
     Node_T *r_sub = node->right;
-    Node_T *parent = get_parent(root, node->val);
+    Node_T *parent = _get_parent(root, node->val);
     node->right = r_sub->left;
     r_sub->left = node;
     if(parent != NULL){
@@ -173,7 +218,7 @@ static Node_T* _leftRotation(Node_T *root, Node_T *node)
 static Node_T* _rightRotation(Node_T *root, Node_T *node)
 {
     Node_T *l_sub = node->left;
-    Node_T *parent = get_parent(root, node->val);
+    Node_T *parent = _get_parent(root, node->val);
     node->left = l_sub->right;
     l_sub->right = node;
 

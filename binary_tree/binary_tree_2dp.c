@@ -5,10 +5,17 @@
 static int height_of_tree = 0;
 static int depth_of_node = -1;
 
-void binary_tree_2dp(Node_T *node)
+static void _binary_tree_2dp_inorder(Node_T*);
+
+void binary_tree_2dp(Tree_T *t)
 {
-    height_of_tree = node->height;
-    _binary_tree_2dp_inorder(node);
+    if(t->root == NULL){
+        printf("The tree is null\n");
+        return;
+    }
+    height_of_tree = t->root->height;
+    _binary_tree_2dp_inorder(t->root);
+    printf("\n");
 }
 
 static void _binary_tree_2dp_inorder(Node_T *node)
