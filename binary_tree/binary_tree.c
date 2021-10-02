@@ -17,8 +17,17 @@ static void _updateNodes(Node_T *root, Node_T *node);
 static Node_T* _leftRotation(Node_T *root, Node_T *node);
 static Node_T* _rightRotation(Node_T *root, Node_T *node);
 static Node_T* _AVL(Node_T *root, Node_T *abs_root, Node_T *node);
+static int _run_avl = 0;
 
 /*--------------API for Users--------------*/
+void enable_AVL()
+{
+    _run_avl = 1;
+}
+void disable_AVL()
+{
+    _run_avl = 0;
+}
 Tree_T* init(int val)
 {
     Tree_T *t = malloc(sizeof(Tree_T));
@@ -122,9 +131,8 @@ static Node_T* _insert(Node_T *root, int val)
     else                    parent->right = node;
 
     _updateNodes(root, node);
-    #ifdef AVL
-    root = MACRO_AVL(root, node);
-    #endif
+    if(_run_avl)
+        root = MACRO_AVL(root, node);
     return root;
 }
 
@@ -158,14 +166,12 @@ static Node_T* _del(Node_T *root, int val)
     /* 更新node屬性和調用AVL */
     if(replace == NULL){
         _updateNodes(root, parent);
-        #ifdef AVL
-        root = MACRO_AVL(root, parent);
-        #endif
+        if(_run_avl)
+            root = MACRO_AVL(root, parent);
     }else{
         _updateNodes(root, replace);
-        #ifdef AVL
-        root = MACRO_AVL(root, replace);
-        #endif
+        if(_run_avl)
+            root = MACRO_AVL(root, replace);
     }
     
     free(node);
@@ -233,8 +239,6 @@ static Node_T* _rightRotation(Node_T *root, Node_T *node)
     return root;
 }
 
-#ifdef AVL
-
 /* ptr is the same as abs_root, and the recursive will change ptr every call, 
    since we need a original one to pass in Rotations, we need to pass a copy in */
 static Node_T* _AVL(Node_T *ptr, Node_T *abs_root, Node_T *node)
@@ -243,29 +247,27 @@ static Node_T* _AVL(Node_T *ptr, Node_T *abs_root, Node_T *node)
     if(node->val > ptr->val)    _AVL(ptr->right, abs_root, node);
 
     if(ptr->bf < -1){
-        // RR
-        if(ptr->right->right != NULL){
+        // RL
+        if(ptr->right->left != NULL){
+            abs_root = _rightRotation(abs_root, ptr->right);
             abs_root = _leftRotation(abs_root, ptr);
         }
-        // RL
+        // RR
         else{
-            abs_root = _rightRotation(abs_root, ptr->right);
             abs_root = _leftRotation(abs_root, ptr);
         }
     }
     else if(ptr->bf > 1){
-        // LL
-        if(ptr->left->left != NULL){
+        // LR
+        if(ptr->left->right != NULL){
+            abs_root = _leftRotation(abs_root, ptr->left);
             abs_root = _rightRotation(abs_root, ptr);
         }
-        // LR
+        // LL
         else{
-            abs_root = _leftRotation(abs_root, ptr->left);
             abs_root = _rightRotation(abs_root, ptr);
         }
     }
 
     return abs_root;
 }
-
-#endif

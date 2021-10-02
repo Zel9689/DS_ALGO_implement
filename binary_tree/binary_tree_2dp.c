@@ -15,7 +15,7 @@ void binary_tree_2dp(Tree_T *t)
     }
     height_of_tree = t->root->height;
     _binary_tree_2dp_inorder(t->root);
-    printf("\n");
+    printf("-------------------------\n");
 }
 
 static void _binary_tree_2dp_inorder(Node_T *node)

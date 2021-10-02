@@ -5,5 +5,4 @@
 
 void binary_tree_2dp(Tree_T*);
 
-
 #endif
