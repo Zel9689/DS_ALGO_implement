@@ -1,69 +1,90 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
-#include "binary_search_tree.h"
+#include "../binary_tree/binary_tree.h"
+#include "../binary_tree/binary_tree_2dp.h"
+
+typedef struct Member Member_T;
+struct Member{
+    int age;
+    char *name;
+    char *occupation;
+};
+
+Member_T* member_init(int age, char *name, char *occupation)
+{
+    Member_T *m = malloc(sizeof(Member_T));
+    m->age = age;
+    m->name = name;
+    m->occupation = occupation;
+    return m;
+}
 
 int main()
 {
-    int i = 0;
-    member_t *bst = init(20, 23, "John");
+    /* create tree with member data */
+    printf("[Initialize Tree]\n");
+    Tree_T* t = init(20);
+    t->root->data = member_init(23, "John", "Student");
 
-    i++;
-    if(insert(bst, 10, 23, "Amy") == 0);
-    else    printf("%d failed\n", i);
+    Node_T* n = insert(t, 10);
+    n->data = member_init(23, "Amy", "Student");
 
-    i++;
-    if(insert(bst, 46, 26, "Alice") == 0);
-    else    printf("%d failed\n", i);
+    n = insert(t, 46);
+    n->data = member_init(26, "Alice", "Accountant");
 
-    i++;
-    if(insert(bst, 1, 23, "Raver") == 0);
-    else    printf("%d failed\n", i);
+    n = insert(t, 1);
+    n->data = member_init(23, "Raver", "Engineer");
 
-    i++;
-    if(insert(bst, 18, 40, "Jason") == 0);
-    else    printf("%d failed\n", i);
+    n = insert(t, 18);
+    n->data = member_init(40, "Jason", "Freelancer");
 
-    i++;
-    if(insert(bst, 30, 54, "Robert") == 0);
-    else    printf("%d failed\n", i);
+    n = insert(t, 30);
+    n->data = member_init(54, "Robert", "Teacher");
 
-    i++;
-    if(insert(bst, 10, 54, "Test") == 0); // key collision
-    else    printf("%d failed\n", i);
+    /* try to insert a duplicate number */
+    n = insert(t, 20);
 
-    i++;
-    if(insert(bst, 12, 10, "Kid") == 0);
-    else    printf("%d failed\n", i);
+    /* sort and print 2d*/
+    sort(t);
+    binary_tree_2dp(t);
 
-    i++;
-    if(insert(bst, 19, 3, "Baby") == 0);
-    else    printf("%d failed\n", i);
+    /* search node 18 and print info */
+    printf("[Search node 18 and print info]\n");
+    n = search(t, 18);
+    printf("Node: %d\nAge: %d\nName: %s\nOccupation: %s\n\n",\
+        n->val, \
+        ((Member_T*)n->data)->age, \
+        ((Member_T*)n->data)->name, \
+        ((Member_T*)n->data)->occupation);
 
-    i++;
-    if(insert(bst, 35, 33, "Ellen") == 0);
-    else    printf("%d failed\n", i);
+    /* delete node 46 */
+    printf("[Delete node 46]\n");
+    del(t, 46);
+    binary_tree_2dp(t);
 
-    sort(bst);
-    printf("-----------------\n");
-    del(bst, 10);
-    sort(bst);
-    printf("-----------------\n");
-    del(bst, 1);
-    sort(bst);
-    printf("-----------------\n");
-    del(bst, 12);
-    sort(bst);
-    printf("-----------------\n");
-    del(bst, 46);
-    sort(bst);
-    printf("-----------------\n");
-    del(bst, 20); // can't del root of bst
-    sort(bst);
-    printf("-----------------\n");
-    modify(bst, 35, 100, "OLDMAN");
-    sort(bst);
-    printf("-----------------\n");
-    destroy(bst);
+    /* delete root */
+    printf("[Delete root]\n");
+    del(t, 20);
+    binary_tree_2dp(t);
+
+    /* get parent of node 1 */
+    printf("[Get parent of node 1]\n");
+    n = get_parent(t, 1);
+    printf("Node: %d\nAge: %d\nName: %s\nOccupation: %s\n\n",\
+        n->val, \
+        ((Member_T*)n->data)->age, \
+        ((Member_T*)n->data)->name, \
+        ((Member_T*)n->data)->occupation);
+
+    /* get Height of node 10 */
+    printf("[Get Height of node 10]\n");
+    int h = getHeight(n);
+    printf("Height: %d\n\n", h);
+
+    /* destroy Tree */
+    printf("[Destroy Tree and Print]\n");
+    destroy(t);
+    binary_tree_2dp(t);
+
     return 0;
 }
