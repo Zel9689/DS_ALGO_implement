@@ -21,11 +21,10 @@ void disable_AVL(void);
 Tree_T* init(int);
 Node_T* search(Tree_T *t, int);
 Node_T* get_parent(Tree_T *t, int);
-void insert(Tree_T *t, int);
+Node_T* insert(Tree_T *t, int);
 void del(Tree_T *t, int);
 void destroy(Tree_T *t);
 void sort(Tree_T *t);
 int getHeight(Node_T*);
-int link_data(Node_T *root, int, void *data);
 
 #endif
