@@ -1,9 +1,7 @@
-/* !!編譯時要Define AVL才會啟用AVL的程式碼!! */
 #include <stdio.h>
 #include <stdlib.h>
-#include "../binary_tree/binary_tree.h"
-#include "../binary_tree/binary_tree_2dp.h"
-#include <time.h>
+#include "../lib/binary_tree/binary_tree.h"
+#include "../lib/binary_tree/binary_tree_2dp.h"
 
 int main()
 {
