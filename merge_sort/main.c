@@ -6,15 +6,20 @@
 #define SIZE 10
 #endif
 
+// front, mid, end為陣列A的index
 void merge(int *A, int front, int mid, int end)
 {
-    int tmp[end - front + 1];
-    for(int i=0; i<end - front + 1; i++){
-        tmp[i] = A[i];
+    // 將要比較的數值寫到tmp陣列
+    int tmp_len = end - front + 1;
+    int tmp[tmp_len];
+    for(int i=0; i<tmp_len; i++){
+        tmp[i] = A[front + i];
     }
-    int ptr1 = front;
-    int ptr2 = mid + 1;
-    while(ptr1 <= mid && ptr2 <= end){
+
+    // 兩組數據比較，較小的就提交到陣列A，ptr++
+    int ptr1 = 0; //第一組數據的ptr
+    int ptr2 = (0 + (tmp_len - 1)) / 2 + 1; // 頭尾相加除以2得中間值，得到第二組數據的ptr
+    while(ptr1 <= (0 + (tmp_len - 1)) / 2 && ptr2 <= tmp_len - 1){
         if(tmp[ptr1] < tmp[ptr2]){
             A[front] = tmp[ptr1];
             ptr1++;
@@ -24,8 +29,9 @@ void merge(int *A, int front, int mid, int end)
         }                
         front++;
     }
-    while(ptr1 <= mid)  A[front++] = tmp[ptr1++];
-    while(ptr2 <= end)  A[front++] = tmp[ptr2++];
+    // 將剩下沒跑完的數據全部提交到陣列A
+    while(ptr1 <= (0 + (tmp_len - 1)) / 2)  A[front++] = tmp[ptr1++];
+    while(ptr2 <= tmp_len - 1)              A[front++] = tmp[ptr2++];
 }
 
 void mergesort(int *A, int front, int end)
@@ -50,6 +56,7 @@ int main()
     }
 
     // Print
+    printf("source: ");
     for(int i=0; i<SIZE; i++){
         printf("%d ", A[i]);
     }
@@ -58,8 +65,10 @@ int main()
     mergesort(A, 0, SIZE - 1);
 
     // Print
+    printf("sorted: ");
     for(int i=0; i<SIZE; i++){
         printf("%d ", A[i]);
     }
+    printf("\n");
     return 0;
 }
