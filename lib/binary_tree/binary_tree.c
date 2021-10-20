@@ -30,15 +30,10 @@ void disable_AVL()
 }
 Tree_T* init(int val)
 {
-    Tree_T *t = malloc(sizeof(Tree_T));
-    Node_T *root = malloc(sizeof(Node_T));
+    Tree_T *t = calloc(1, sizeof(Tree_T));
+    Node_T *root = calloc(1, sizeof(Node_T));
     t->root = root;
-    root->left = 0;
-    root->right = 0;
     root->val = val;
-    root->data = 0;
-    root->height = 0;
-    root->bf = 0;
     return t;
 }
 Node_T* search(Tree_T *t, int val)
@@ -133,7 +128,7 @@ static struct root_and_node _insert(Node_T *root, int val)
 {
     Node_T *node = NULL;
     if(_search(root, val) == NULL){
-        node = malloc(sizeof(Node_T));
+        node = calloc(1, sizeof(Node_T));
         Node_T *parent = _get_parent(root, val);
         node->val = val;
         if(val < parent->val)   parent->left = node;
