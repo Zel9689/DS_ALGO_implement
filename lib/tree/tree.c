@@ -2,6 +2,11 @@
 #include <stdlib.h>
 #include <string.h>
 #include "tree.h"
+#define max(a, b) ({ \
+    typeof (a) _a = (a); \
+    typeof (b) _b = (b); \
+    _a > _b ? _a : _b; \
+})
 
 Node_T* init(int val)
 {
@@ -26,11 +31,19 @@ Node_T* insert(Node_T *n, int val)
     
     return child;
 }
-
-// Node_T* search(Tree_T *t, Node_T *n, int val)
-// {
-
-// }
+int current_depth = -1;
+Node_T* search(Node_T *n, int val)
+{
+    current_depth++;
+    int i = 0;
+    if(n->edge != 0 ){
+        for(; i < n->edge; i++)
+            search(*((n->children) + i), val);
+    }
+    if(n->val == val)
+        printf("Found val %d at Depth %d\n", val, current_depth);
+    current_depth--;
+}
 
 void print_edge(Node_T *n)
 {
@@ -49,12 +62,24 @@ void print_edge(Node_T *n)
 
 int getHeight(Node_T *n)
 {
+    if(n->edge == 0) return 0;
     int h = 0;
-    if(n->edge != 0){
-        Node_T** p = n->children;
-        for(int i = 0; i < n->edge; i++, p++){
-            
-        }
-    }
-    return h;
+    for(int i = 0; i < n->edge; i++)
+        h = max(getHeight(*((n->children) + i)), h);
+    return h + 1;
 }
+
+void destroy(Node_T *n)
+{
+    if(n->edge == 0){
+        printf("node val %d has been destroyed\n", n->val);
+        free(n);
+        return;
+    }
+    for(int i = 0; i < n->edge; i++)
+        destroy(*((n->children) + i));
+    printf("node val %d has been destroyed\n", n->val);
+    free(n->children);
+    free(n);
+}
+
