@@ -7,19 +7,14 @@ struct Node{
     Node_T *next;
 };
 
-typedef struct List List_T;
-struct List{
-    Node_T *head;
-};
-
-List_T* init(int val);
-void append(List_T*, int val);
-void insert(List_T*, int pos, int val);
-void del(List_T*, Node_T*);
-void pop(List_T*);
-Node_T* search(List_T*, int val);
-void reverse(List_T*);
-void print(List_T*);
-void destroy(List_T*);
+Node_T* init(int val);
+void append(Node_T*, int val);
+void insert(Node_T*, int pos, int val);
+void del(Node_T*, Node_T*);
+void pop(Node_T*);
+Node_T* search(Node_T*, int val);
+void reverse(Node_T*);
+void print(Node_T*);
+void destroy(Node_T*);
 
 #endif

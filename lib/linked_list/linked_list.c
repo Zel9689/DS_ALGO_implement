@@ -2,85 +2,74 @@
 #include <stdlib.h>
 #include "linked_list.h"
 
-List_T* init(int val)
+Node_T* init(int val)
 {
     Node_T *n = calloc(1, sizeof(Node_T));
     n->val = val;
-    List_T *l = calloc(1, sizeof(List_T));
-    l->head = n;
-    return l;
+    Node_T *head = calloc(1, sizeof(Node_T));
+    head->next = n;
+    return head;
 }
 
-void append(List_T *l, int val)
+void append(Node_T *h, int val)
 {
     Node_T *n = calloc(1, sizeof(Node_T));
     n->val = val;
-    Node_T *p = l->head;
+    Node_T *p = h;
     while(p->next != NULL) p = p->next;
     p->next = n;
 }
 
-void insert(List_T *l, int pos, int val)
+void insert(Node_T *h, int pos, int val)
 {
     Node_T *n = calloc(1, sizeof(Node_T));
     n->val = val;
-    if(pos > 0){
-        Node_T *p = l->head;
-        for(int i = 0; i < pos - 1; i++){
-            if(p == NULL) return;
-            p = p->next;
-        }
-        Node_T *tmp = p->next;
-        p->next = n;
-        n->next = tmp;
+    Node_T *p = h;
+    for(int i = 0; i < pos; i++){
+        if(p == NULL) return;
+        p = p->next;
     }
-    else if(pos == 0){
-        Node_T *tmp = l->head;
-        l->head = n;
-        n->next = tmp;
-    }
+    if(p == NULL) return;
+    n->next = p->next;
+    p->next = n;
 }
 
-void del(List_T *l, Node_T *n)
+void del(Node_T *h, Node_T *n)
 {
-    if(l->head == n){
-        l->head = l->head->next;
-        free(n);
-        return;
-    }
-    Node_T *prev;
-    for(Node_T *p = l->head; p != NULL; prev = p, p = p->next){
-        if(n == p){
-            prev->next = p->next;
+    if(h == n) return;
+    Node_T *tmp;
+    for(Node_T *p = h->next; p != NULL; tmp = p, p = p->next){
+        if(p == n){
+            tmp->next = tmp->next->next;
             free(p);
+            return;
         }
     }
 }
 
-void pop(List_T *l)
+void pop(Node_T *h)
 {
     Node_T *tmp = NULL;
-    Node_T *p = l->head;
+    Node_T *p = h;
     while(p->next != NULL){
         tmp = p;
         p = p->next;
     }
-    if(tmp == NULL)
-        l->head = NULL;
-    else
-        tmp->next = NULL;
+    if(p == h) return;
+    else            tmp->next = NULL;
     free(p);
 }
 
-Node_T* search(List_T *l, int val)
+Node_T* search(Node_T *h, int val)
 {
-    for(Node_T *p = l->head; p != NULL; p = p->next){
-        if(p->val == val)
+    for(Node_T *p = h->next; p != NULL; p = p->next){
+        if(p->val == val && p != h)
             return p;
     }
+    return NULL;
 }
 
-static Node_T* _reverse(Node_T *n)
+static void _reverse(Node_T *n)
 {
     if(n->next == NULL) return;
     _reverse(n->next);
@@ -88,33 +77,32 @@ static Node_T* _reverse(Node_T *n)
     n->next->next = n;
 }
 
-void reverse(List_T *l)
+void reverse(Node_T *h)
 {
-    Node_T *last = l->head;
+    Node_T *last = h->next;
     while(last->next != NULL)   last = last->next;
-    l->head = _reverse(l->head);
-    l->head->next = NULL;
-    l->head = last;
+    _reverse(h->next);
+    h->next->next = NULL;
+    h->next = last;
 }
 
-void print(List_T *l)
+void print(Node_T *h)
 {
-    Node_T *p = l->head;
+    Node_T *p = h->next;
     while(p != NULL){
         printf("%d -> ", p->val);
         p = p->next;
     }
-    printf("NULL\n");
+    printf("NULL\n\n");
 }
 
-void destroy(List_T *l)
+void destroy(Node_T *h)
 {
-    Node_T *p = l->head;
+    Node_T *p = h;
     while(p != NULL){
         Node_T *tmp = p;
         p = p->next;
         printf("node val: %d has been destroyed.\n", tmp->val);
         free(tmp);
     }
-    free(l);
 }
