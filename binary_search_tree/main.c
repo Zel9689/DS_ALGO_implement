@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "../binary_tree/binary_tree.h"
-#include "../binary_tree/binary_tree_2dp.h"
+#include "../lib/binary_tree/binary_tree.h"
+#include "../lib/binary_tree/binary_tree_2dp.h"
 
 typedef struct Member Member_T;
 struct Member{
