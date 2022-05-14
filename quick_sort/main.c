@@ -4,11 +4,11 @@
 
 void solve(int* A, int start, int end)
 {
+    if(start >= end) return;
+
     int pivot = A[end];
     int first_big = start;
     int search_small = start + 1;
-
-    if(start >= end) return;
 
     while(search_small <= end){
         // 找到第一個比pivot大的數字前都繼續平移指標
