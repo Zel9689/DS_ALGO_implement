@@ -23,18 +23,13 @@ void heapify_up(int index)
 void heapify_down(int index)
 {
     // 節點比左節點或右節點還大
-    while(Tree[index] > Tree[L_CHILD(index)] || Tree[index] > Tree[R_CHILD(index)]){
-        if(Tree[L_CHILD(index)] == 0 && Tree[R_CHILD(index)] == 0){
-            break;
-        }
-        else if(L_CHILD(index) >= Amount){
-            break;
-        }
-        else if(Tree[R_CHILD(index)] == 0 || (Tree[L_CHILD(index)] < Tree[R_CHILD(index)] && Tree[L_CHILD(index)] != 0)){
+    while(L_CHILD(index) < Amount){
+        if(Tree[L_CHILD(index)] == 0)   break;
+
+        if((Tree[L_CHILD(index)] <= Tree[R_CHILD(index)]) || Tree[R_CHILD(index)] == 0){
             swap(Tree[index], Tree[L_CHILD(index)]);
             index = L_CHILD(index);
-        }
-        else if(Tree[L_CHILD(index)] == 0 || (Tree[L_CHILD(index)] > Tree[R_CHILD(index)] && Tree[R_CHILD(index)] != 0)){
+        }else{
             swap(Tree[index], Tree[R_CHILD(index)]);
             index = R_CHILD(index);
         }
